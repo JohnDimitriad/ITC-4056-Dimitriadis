@@ -1,96 +1,110 @@
 $(document).ready(function () {
-    const taskForm = $('#task-form');
-    const taskList = $('#task-list tbody');
+    const tasksKey = 'tasks';
 
-    // Load tasks from localStorage on page load
-    loadTasks();
+    // Fetch tasks from localStorage or initialize empty array
+    function getTasks() {
+        return JSON.parse(localStorage.getItem(tasksKey)) || [];
+    }
 
-    // Form submission event to add a new task
-    taskForm.on('submit', function (e) {
+    // Save tasks to localStorage
+    function saveTasks(tasks) {
+        localStorage.setItem(tasksKey, JSON.stringify(tasks));
+    }
+
+    // Add new task
+    $('#task-form').on('submit', function (e) {
         e.preventDefault();
-        addTask();
+
+        const newTask = {
+            name: $('#task-name').val(),
+            desc: $('#task-desc').val(),
+            date: $('#task-date').val(),
+            completed: false
+        };
+
+        const tasks = getTasks();
+        tasks.push(newTask);
+        saveTasks(tasks);
+        renderTaskList(tasks);
+        this.reset();
     });
 
-    // Function to add a task
-    function addTask() {
-        const taskName = $('#task-name').val().trim();
-        const taskDesc = $('#task-desc').val().trim();
-        const taskDate = $('#task-date').val();
+    // Render the full task list (on the tasks page)
+    function renderTaskList(tasks) {
+        const taskList = $('#task-list tbody');
+        taskList.empty();
 
-        if (taskName && taskDesc && taskDate) {
-            const task = { name: taskName, desc: taskDesc, date: taskDate, completed: false };
-            saveTask(task);
-            renderTask(task);
-            taskForm[0].reset(); // Clear form fields
+        tasks.forEach((task, index) => {
+            const taskRow = $(`
+                <tr>
+                    <td>${task.name}</td>
+                    <td>${task.desc}</td>
+                    <td>${task.date}</td>
+                    <td>${task.completed ? 'Completed' : 'Pending'}</td>
+                    <td>
+                        <button class="btn btn-success complete-task" data-index="${index}">Mark Complete</button>
+                        <button class="btn btn-danger delete-task" data-index="${index}">Delete</button>
+                    </td>
+                </tr>
+            `);
+            taskList.append(taskRow);
+        });
+    }
+
+    // Load tasks and display on the tasks page
+    if ($('#task-list').length) {
+        renderTaskList(getTasks());
+    }
+
+    // Event handler for marking tasks as complete
+    $(document).on('click', '.complete-task', function () {
+        const index = $(this).data('index');
+        const tasks = getTasks();
+        tasks[index].completed = true;
+        saveTasks(tasks);
+        renderTaskList(tasks);
+    });
+
+    // Event handler for deleting tasks
+    $(document).on('click', '.delete-task', function () {
+        const index = $(this).data('index');
+        const tasks = getTasks();
+        tasks.splice(index, 1);
+        saveTasks(tasks);
+        renderTaskList(tasks);
+    });
+
+    // Display recent tasks on the index page
+    function loadRecentTasks() {
+        const tasks = getTasks();
+        const activityList = $('#activityList');
+
+        // Clear current list in case of re-render
+        activityList.empty();
+
+        // Limit display to 5 most recent tasks
+        const recentTasks = tasks.slice(-5);
+
+        // Append each task to the activity list
+        recentTasks.forEach((task) => {
+            const taskItem = $(`
+                <li>
+                    <strong>${task.name}</strong> - ${task.desc} <br>
+                    <small>Due Date: ${task.date}</small> 
+                    <span class="status">(${task.completed ? 'Completed' : 'Pending'})</span>
+                </li>
+            `);
+            activityList.append(taskItem);
+        });
+
+        // If there are no tasks, display a placeholder message
+        if (recentTasks.length === 0) {
+            activityList.append('<li>No recent tasks available.</li>');
         }
     }
 
-    // Save a task to localStorage
-    function saveTask(task) {
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        tasks.push(task);
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-    }
-
-    // Load tasks from localStorage
-    function loadTasks() {
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        tasks.forEach(renderTask);
-    }
-
-    // Render a task to the table
-    function renderTask(task) {
-        const taskRow = $(`
-            <tr>
-                <td>${task.name}</td>
-                <td>${task.desc}</td>
-                <td>${task.date}</td>
-                <td>
-                    <span class="status">${task.completed ? 'Completed' : 'Pending'}</span>
-                </td>
-                <td>
-                    <button class="btn btn-success btn-sm complete-task">Complete</button>
-                    <button class="btn btn-danger btn-sm delete-task">Delete</button>
-                </td>
-            </tr>
-        `);
-
-        // Mark task as completed
-        taskRow.find('.complete-task').on('click', function () {
-            task.completed = !task.completed;
-            taskRow.find('.status').text(task.completed ? 'Completed' : 'Pending');
-            updateTasks();
-        });
-
-        // Delete task
-        taskRow.find('.delete-task').on('click', function () {
-            taskRow.remove();
-            deleteTask(task);
-        });
-
-        taskList.append(taskRow);
-    }
-
-    // Update tasks in localStorage
-    function updateTasks() {
-        const updatedTasks = [];
-        taskList.find('tr').each(function () {
-            const $row = $(this);
-            const task = {
-                name: $row.find('td').eq(0).text(),
-                desc: $row.find('td').eq(1).text(),
-                date: $row.find('td').eq(2).text(),
-                completed: $row.find('.status').text() === 'Completed'
-            };
-            updatedTasks.push(task);
-        });
-        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-    }
-
-    // Delete a task from localStorage
-    function deleteTask(taskToDelete) {
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        const updatedTasks = tasks.filter(task => !(task.name === taskToDelete.name && task.date === taskToDelete.date));
-        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    // Check if on index page and load recent tasks
+    if ($('#activityList').length) {
+        loadRecentTasks();
     }
 });
