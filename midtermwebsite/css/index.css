@@ -1,21 +1,32 @@
-.navigation{
-	background-color: #333;
-	float: center;
-	color: #f2f2f2;
-	margin: auto;
-	position:relative;
-	padding: 14px 16px;
-	font-size: 17px;
-	text-align: center;
-	position: sticky;
+/* Basic styling */
+body, .footer {
+    font-family: Arial, sans-serif;
 }
 
-.title {
-	float:center;
-	width:100px
-	text-align: center;
-	padding-right: 10px;
-	color: white;
+/* Dark mode */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
 }
 
-/* this could be styles.css */
+
+/* Navigation Styling */
+.navigation {
+    background-color: #333;
+    padding: 10px;
+    text-align: center;
+}
+
+.navigation a {
+    color: #fff;
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+/* Footer */
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}

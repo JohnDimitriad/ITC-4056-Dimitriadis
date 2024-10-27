@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
 		<meta name="description"
 		content="example website"/>
@@ -7,33 +8,52 @@
 		<title>
 			Home Page
 		</title>
+		<!-- CSS -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 		<link href = ".\css\index.css" type = "text/css" rel = "stylesheet">
+		<!-- Bootstrap -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+		<!-- Javascript -->
+		<script src="./javascript/darkmode.js" defer></script>
+		<!-- jQuery -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	</head>
-	<body>
-		<div id="contact"><form>
-			<h1> This is a sample logo </h1>
-			<h1> Website Title </h1>
-			<hr />
-			<div class="navigation">
-			<a href="#home" class="title">Home Page</a>
+<body>
+    <!-- Navigation -->
+    <header class="navigation">
+        <img src=".\images\logo.png" alt="logo placeholder">
+        <nav>
+            <a href="index.html" class="title">Home Page</a>
 			<!--the class = "title" is a signifier that shows which page you are in-->
-			<a href=".\tasks.html">Task Page</a>
-			<a href=".\about.html">About page</a>
-			<a href=".\contact.html">Contact page</a>
-			<a href=".\extra.html">CHANGE THIS page</a>
-		</div>
-		</form></div>
-		<div class="container my-5">
-        <h2>Welcome Section</h2>
-        <p>brief introduction</p
-		<p>overview of products/features</p>
-		</div>
-		<p>call to action button (ask in class)</p>
-		<p>latest activity (elina)</p>
-		<p>navigation bar is done already</p>
-		<p>footer with dark mode toggle (maybe top right header/menu?)</p>
-	</body>
+            <a href="tasks.html">Tasks Page</a>
+            <a href="about.html">About Page</a>
+            <a href="contact.html">Contact Page</a>
+            <a href="extra.html">Extra Page</a>
+        </nav>
+    </header>
+
+    <!-- Welcome Section -->
+    <div class="container my-5">
+        <h2>Welcome to Our Pizza Shop!</h2>
+        <p>Explore our mouth-watering pizza options and manage your tasks with us.</p>
+        <button id="toTasksBtn" class="btn btn-primary">Go to Tasks</a></button>
+    </div>
+
+    <!-- Latest Activity -->
+    <div class="container my-5">
+        <h2>Latest Activity</h2>
+        <ul id="activityList">
+            <!-- jQuery can dynamically add items here -->
+        </ul>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <button id="dark-mode-toggle" class="btn btn-outline-secondary">Enable Dark Mode</button>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Pizza Shop © 2023</p>
+    </footer>
+</body>
 </html>
