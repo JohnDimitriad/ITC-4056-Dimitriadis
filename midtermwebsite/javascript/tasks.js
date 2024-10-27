@@ -1,8 +1,7 @@
 $(document).ready(function () {
     const tasksKey = 'tasks';
-    let editIndex = null; // Track the index of the task being edited
 
-    // Fetch tasks from localStorage or initialize empty array
+    // Fetch tasks from localStorage or initialize an empty array
     function getTasks() {
         return JSON.parse(localStorage.getItem(tasksKey)) || [];
     }
@@ -12,11 +11,11 @@ $(document).ready(function () {
         localStorage.setItem(tasksKey, JSON.stringify(tasks));
     }
 
-    // Add new task or update an existing task
+    // Add new task
     $('#task-form').on('submit', function (e) {
         e.preventDefault();
 
-        const taskData = {
+        const newTask = {
             name: $('#task-name').val(),
             desc: $('#task-desc').val(),
             date: $('#task-date').val(),
@@ -24,17 +23,7 @@ $(document).ready(function () {
         };
 
         const tasks = getTasks();
-
-        if (editIndex !== null) {
-            // Update existing task
-            tasks[editIndex] = taskData;
-            editIndex = null;
-            $('#task-form button[type="submit"]').text('Add Task');
-        } else {
-            // Add new task
-            tasks.push(taskData);
-        }
-
+        tasks.push(newTask);
         saveTasks(tasks);
         renderTaskList(tasks);
         this.reset();
@@ -45,7 +34,28 @@ $(document).ready(function () {
         const taskList = $('#task-list tbody');
         taskList.empty();
 
-        tasks.forEach((task, index) => {
+        // Get current filter and sort values
+        const filterValue = $('#filter-status').val();
+        const sortValue = $('#sort-tasks').val();
+
+        // Filter tasks based on status
+        const filteredTasks = tasks.filter(task => {
+            if (filterValue === 'completed') return task.completed;
+            if (filterValue === 'pending') return !task.completed;
+            return true; // all tasks
+        });
+
+        // Sort tasks based on selected criteria
+        const sortedTasks = filteredTasks.sort((a, b) => {
+            if (sortValue === 'name') {
+                return a.name.localeCompare(b.name);
+            } else if (sortValue === 'date') {
+                return new Date(a.date) - new Date(b.date);
+            }
+            return 0;
+        });
+
+        sortedTasks.forEach((task, index) => {
             const taskRow = $(`
                 <tr>
                     <td>${task.name}</td>
@@ -54,7 +64,6 @@ $(document).ready(function () {
                     <td>${task.completed ? 'Completed' : 'Pending'}</td>
                     <td>
                         <button class="btn btn-success complete-task" data-index="${index}">Mark Complete</button>
-                        <button class="btn btn-warning edit-task" data-index="${index}">Edit</button>
                         <button class="btn btn-danger delete-task" data-index="${index}">Delete</button>
                     </td>
                 </tr>
@@ -77,21 +86,6 @@ $(document).ready(function () {
         renderTaskList(tasks);
     });
 
-    // Event handler for editing tasks
-    $(document).on('click', '.edit-task', function () {
-        editIndex = $(this).data('index');
-        const tasks = getTasks();
-        const task = tasks[editIndex];
-
-        // Populate form fields with task data
-        $('#task-name').val(task.name);
-        $('#task-desc').val(task.desc);
-        $('#task-date').val(task.date);
-
-        // Update the submit button text
-        $('#task-form button[type="submit"]').text('Update Task');
-    });
-
     // Event handler for deleting tasks
     $(document).on('click', '.delete-task', function () {
         const index = $(this).data('index');
@@ -99,6 +93,16 @@ $(document).ready(function () {
         tasks.splice(index, 1);
         saveTasks(tasks);
         renderTaskList(tasks);
+    });
+
+    // Event handler for filtering tasks
+    $('#filter-status').on('change', function () {
+        renderTaskList(getTasks());
+    });
+
+    // Event handler for sorting tasks
+    $('#sort-tasks').on('change', function () {
+        renderTaskList(getTasks());
     });
 
     // Display recent tasks on the index page
