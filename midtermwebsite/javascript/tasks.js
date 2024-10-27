@@ -1,5 +1,6 @@
 $(document).ready(function () {
     const tasksKey = 'tasks';
+    let editIndex = null; // Track the index of the task being edited
 
     // Fetch tasks from localStorage or initialize empty array
     function getTasks() {
@@ -11,11 +12,11 @@ $(document).ready(function () {
         localStorage.setItem(tasksKey, JSON.stringify(tasks));
     }
 
-    // Add new task
+    // Add new task or update an existing task
     $('#task-form').on('submit', function (e) {
         e.preventDefault();
 
-        const newTask = {
+        const taskData = {
             name: $('#task-name').val(),
             desc: $('#task-desc').val(),
             date: $('#task-date').val(),
@@ -23,7 +24,17 @@ $(document).ready(function () {
         };
 
         const tasks = getTasks();
-        tasks.push(newTask);
+
+        if (editIndex !== null) {
+            // Update existing task
+            tasks[editIndex] = taskData;
+            editIndex = null;
+            $('#task-form button[type="submit"]').text('Add Task');
+        } else {
+            // Add new task
+            tasks.push(taskData);
+        }
+
         saveTasks(tasks);
         renderTaskList(tasks);
         this.reset();
@@ -43,6 +54,7 @@ $(document).ready(function () {
                     <td>${task.completed ? 'Completed' : 'Pending'}</td>
                     <td>
                         <button class="btn btn-success complete-task" data-index="${index}">Mark Complete</button>
+                        <button class="btn btn-warning edit-task" data-index="${index}">Edit</button>
                         <button class="btn btn-danger delete-task" data-index="${index}">Delete</button>
                     </td>
                 </tr>
@@ -63,6 +75,21 @@ $(document).ready(function () {
         tasks[index].completed = true;
         saveTasks(tasks);
         renderTaskList(tasks);
+    });
+
+    // Event handler for editing tasks
+    $(document).on('click', '.edit-task', function () {
+        editIndex = $(this).data('index');
+        const tasks = getTasks();
+        const task = tasks[editIndex];
+
+        // Populate form fields with task data
+        $('#task-name').val(task.name);
+        $('#task-desc').val(task.desc);
+        $('#task-date').val(task.date);
+
+        // Update the submit button text
+        $('#task-form button[type="submit"]').text('Update Task');
     });
 
     // Event handler for deleting tasks
