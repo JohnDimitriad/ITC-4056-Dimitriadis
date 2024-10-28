@@ -57,3 +57,16 @@ body {
     font-size: 1.1rem;
     text-decoration: none;
 }
+
+.carousel-item {
+	height: 100px; /* Adjust the height as needed */
+	width: 100px;
+}
+
+.carousel-item img {
+/* Make images cover the entire carousel area while maintaining aspect ratio */
+ height: 100%;
+width: auto;
+max-width: 100%;
+object-fit: cover; /* This property ensures the images are scaled properly */
+}
