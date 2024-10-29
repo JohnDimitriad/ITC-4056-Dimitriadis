@@ -70,3 +70,7 @@ width: auto;
 max-width: 100%;
 object-fit: cover; /* This property ensures the images are scaled properly */
 }
+
+.rating label {
+    margin: 0 10px;
+}
