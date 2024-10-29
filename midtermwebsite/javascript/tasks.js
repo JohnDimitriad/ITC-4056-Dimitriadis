@@ -41,7 +41,7 @@ $(document).ready(function () {
         this.reset();
     });
 
-    // Render the full task list (on the tasks page)
+    // Render the full task list (this is for the tasks page)
     function renderTaskList(tasks) {
         const taskList = $('#task-list tbody');
         taskList.empty();
@@ -167,7 +167,7 @@ $(document).ready(function () {
             activityList.append(taskItem);
         });
 
-        // If there are no tasks, display a placeholder message
+        // If there are no tasks, display a message saying so
         if (recentTasks.length === 0) {
             activityList.append('<li>No recent tasks available.</li>');
         }
